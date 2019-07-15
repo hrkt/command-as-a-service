@@ -58,4 +58,4 @@ MIT
 
 # CI
 
-[![CircleCI](https://circleci.com/gh/hrkt/greetings-server.svg?style=svg)](https://circleci.com/gh/hrkt/greetings-server)
+[![CircleCI](https://circleci.com/gh/hrkt/cmd-exec-server.svg?style=svg)](https://circleci.com/gh/hrkt/cmd-exec-server)
