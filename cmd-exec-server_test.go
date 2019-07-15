@@ -12,10 +12,10 @@ func TestPingRoute(t *testing.T) {
 	router := setupRouter()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/greeting", nil)
+	req, _ := http.NewRequest("GET", "/api/exec", nil)
 	router.ServeHTTP(w, req)
 
-	json := `{"message":"hello, world"}`
+	json := `{"result":"SOME INPUT"}`
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, json, w.Body.String())
 }
