@@ -12,13 +12,18 @@ import (
 )
 
 var (
-	Version  string
+	// Version number
+	Version string
+	// Revision number
 	Revision string
+	// RequestBodyBufferSize is the buffer size for http-request-body
+	RequestBodyBufferSize = 2048
 )
 
-func executeIt() string {
+func executeIt(requestBody string) string {
 	cmd := exec.Command("tr", "a-z", "A-Z")
-	cmd.Stdin = strings.NewReader("some input")
+	//cmd.Stdin = strings.NewReader("some input")
+	cmd.Stdin = strings.NewReader(requestBody)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -38,8 +43,12 @@ func setupRouter() *gin.Engine {
 	// Routing
 	router.StaticFile("/", "./index.html")
 
-	router.GET("/api/exec", func(ctx *gin.Context) {
-		res := executeIt()
+	router.POST("/api/exec", func(ctx *gin.Context) {
+		buf := make([]byte, RequestBodyBufferSize)
+		n, _ := ctx.Request.Body.Read(buf)
+		body := string(buf[0:n])
+
+		res := executeIt(body)
 
 		ctx.JSON(200, gin.H{
 			"result": res,
