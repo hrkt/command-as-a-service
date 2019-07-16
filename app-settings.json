@@ -1,0 +1,7 @@
+{
+    "command": "tr",
+    "arguments": [
+        "a-z",
+        "A-Z"
+    ]
+}

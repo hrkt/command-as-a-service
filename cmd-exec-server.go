@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os/exec"
 	"strings"
@@ -11,6 +13,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AppConfig struct {
+	// a command to execute
+	Command string `json:"command"`
+	// arguments for the command
+	Arguments []string `json:"arguments"`
+}
+
 var (
 	// Version number
 	Version string
@@ -18,11 +27,22 @@ var (
 	Revision string
 	// RequestBodyBufferSize is the buffer size for http-request-body
 	RequestBodyBufferSize = 2048
+	// application configuration
+	appConfig AppConfig
 )
 
+func init() {
+	file, err := ioutil.ReadFile("app-settings.json")
+	if err != nil {
+		panic(err)
+	}
+	json.Unmarshal(file, &appConfig)
+	fmt.Printf("Command :%s\n", appConfig.Command)
+	//fmt.Printf("Arguments :%s\n", config.Server.Port)
+}
+
 func executeIt(requestBody string) string {
-	cmd := exec.Command("tr", "a-z", "A-Z")
-	//cmd.Stdin = strings.NewReader("some input")
+	cmd := exec.Command(appConfig.Command, appConfig.Arguments[:]...)
 	cmd.Stdin = strings.NewReader(requestBody)
 	var out bytes.Buffer
 	cmd.Stdout = &out
