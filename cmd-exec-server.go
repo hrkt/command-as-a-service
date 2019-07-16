@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// A struct form app-config.json
+// AppConfig is a struct for app-config.json
 type AppConfig struct {
 	// a command to execute
 	Command string `json:"command"`
@@ -39,7 +39,6 @@ func init() {
 	}
 	json.Unmarshal(file, &appConfig)
 	fmt.Printf("Command :%s\n", appConfig.Command)
-	//fmt.Printf("Arguments :%s\n", config.Server.Port)c
 }
 
 func executeIt(requestBody string) string {
@@ -51,7 +50,6 @@ func executeIt(requestBody string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Printf("in all caps: %q\n", out.String())
 	return out.String()
 }
 
