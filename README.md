@@ -1,8 +1,23 @@
 # cmd-exec-server
 
+## It does...
+
 cmd-exec-server executes the command specified by app-settings.json, with STDIN from HTTP request body, and returns STDOUT in HTTP response body.
 
+## It does not...
+
+- authenticate request
+- limit rate
+
+## future work
+
+see GitHub project : https://github.com/hrkt/cmd-exec-server/projects
+
 # How to run
+
+0. edit app-settings.json
+
+see: "app-settings.json" paragraph in this README. 
 
 1. execute server.
 
