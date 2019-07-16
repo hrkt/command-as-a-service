@@ -83,6 +83,7 @@ $ make test
 
 ```
 $ make fmt
+```
 
 ## build container
 
@@ -96,9 +97,6 @@ $ make build-container
 $ make run-container
 ```
 
-
-
-```
 # License
 MIT
 
