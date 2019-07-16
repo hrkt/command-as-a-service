@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// A struct form app-config.json
 type AppConfig struct {
 	// a command to execute
 	Command string `json:"command"`
