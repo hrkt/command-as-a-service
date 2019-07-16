@@ -30,7 +30,7 @@ check:
 	echo ""
 
 fmt:
-	go fmt greetings-server.go
+	go fmt cmd-exec-server.go
 
 test:
 	go test
