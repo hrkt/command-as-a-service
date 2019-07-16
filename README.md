@@ -1,8 +1,5 @@
 # cmd-exec-server
 
-forked source:
-https://qiita.com/drafts/a524910b14fc8c05038f
-
 cmd-exec-server executes the command specified by app-settings.json, with STDIN from HTTP request body, and returns STDOUT in HTTP response body.
 
 # How to run
