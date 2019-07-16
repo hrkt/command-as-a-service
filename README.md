@@ -15,6 +15,10 @@ see GitHub project : https://github.com/hrkt/cmd-exec-server/projects
 
 # How to run
 
+0. edit app-settings.json
+
+see: "app-settings.json" paragraph in this README. 
+
 1. execute server.
 
 ```
