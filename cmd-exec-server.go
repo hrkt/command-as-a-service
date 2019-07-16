@@ -39,7 +39,7 @@ func init() {
 	}
 	json.Unmarshal(file, &appConfig)
 	fmt.Printf("Command :%s\n", appConfig.Command)
-	//fmt.Printf("Arguments :%s\n", config.Server.Port)
+	//fmt.Printf("Arguments :%s\n", config.Server.Port)c
 }
 
 func executeIt(requestBody string) string {
