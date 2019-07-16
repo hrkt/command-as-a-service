@@ -3,10 +3,43 @@
 forked source:
 https://qiita.com/drafts/a524910b14fc8c05038f
 
+cmd-exec-server executes the command specified by app-settings.json, with STDIN from HTTP request body, and returns STDOUT in HTTP response body.
+
+# How to run
+
+1. execute server.
+
+```
+$ make run
+```
+
+2. make HTTP POST request
+
+```
+$ curl -X POST localhost:8080/api/exec -d "some input"
+{"result":"SOME INPUT"}
+```
+
+
 # prerequisites
 
 - dep as dependency manager
 - linux, *nix like platforms - ("endless" shows error message  on windows platform, at this point of moment)
+
+# app-settings.json
+
+specify "command" and "arguments"
+
+```
+{
+    "command": "tr",
+    "arguments": [
+        "a-z",
+        "A-Z"
+    ]
+}
+```
+
 
 # usage
 
