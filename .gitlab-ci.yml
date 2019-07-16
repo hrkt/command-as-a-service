@@ -4,9 +4,9 @@ stages:
     - test
 
 before_script:
-  - mkdir -p /go/src/ehw2018.io/greetings-server/
-  - cp -fr ../greetings-server /go/src/ehw2018.io
-  - cd /go/src/ehw2018.io/greetings-server
+  - mkdir -p /go/src/ehw2018.io/cmd-exec-server/
+  - cp -fr ..//cmd-exec-server /go/src/ehw2018.io
+  - cd /go/src/ehw2018.io/cmd-exec-server
 
 exec_test:
     stage: test
@@ -20,7 +20,7 @@ exec_test:
         - apk add docker
         - go get -u github.com/golang/dep/cmd/dep
         - make depensure
-        - make bin/greetings-server
+        - make bin/cmd-exec-server
         - make test
         - make build-container
         - make push-container
