@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/fvbock/endless"
 )
 
@@ -56,5 +57,11 @@ func main() {
 
 	fmt.Println("command-as-a-service : Version:" + Version + " Revision:" + Revision)
 
-	endless.ListenAndServe(":8080", setupRouter())
+	api := rest.NewApi()
+	api.Use(rest.DefaultDevStack...)
+	api.SetApp(rest.AppSimple(func(w rest.ResponseWriter, r *rest.Request) {
+		w.WriteJson(map[string]string{"Body": "Hello World!"})
+	}))
+
+	endless.ListenAndServe(":8080", api.MakeHandler())
 }
