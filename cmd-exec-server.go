@@ -1,15 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os/exec"
 	"strings"
 
-	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/fvbock/endless"
 )
 
@@ -41,27 +40,40 @@ func init() {
 	fmt.Printf("Command :%s\n", appConfig.Command)
 }
 
-func executeIt(requestBody string) string {
-	cmd := exec.Command(appConfig.Command, appConfig.Arguments[:]...)
+func executeIt(path string, requestBody string) string {
+	//cmd := exec.Command(path, appConfig.Arguments[:]...)
+	cmd := exec.Command(path)
 	cmd.Stdin = strings.NewReader(requestBody)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
+	out, err := cmd.Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return string(err.Error())
 	}
-	return out.String()
+	return string(out)
+}
+
+func MyServer() http.Handler {
+	return &myHandler{}
+}
+
+type myHandler struct {
+}
+
+func (f *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Println("called:" + r.URL.Path)
+	buffer, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf(err.Error())
+	}
+	res := executeIt(r.URL.Path, string(buffer))
+	w.Write([]byte(res))
 }
 
 func main() {
 
 	fmt.Println("command-as-a-service : Version:" + Version + " Revision:" + Revision)
 
-	api := rest.NewApi()
-	api.Use(rest.DefaultDevStack...)
-	api.SetApp(rest.AppSimple(func(w rest.ResponseWriter, r *rest.Request) {
-		w.WriteJson(map[string]string{"Body": "Hello World!"})
-	}))
+	myHandler := MyServer()
 
-	endless.ListenAndServe(":8080", api.MakeHandler())
+	endless.ListenAndServe(":8080", myHandler)
 }
