@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/fvbock/endless"
-	"github.com/gin-gonic/gin"
 )
 
 // AppConfig is a struct for app-config.json
@@ -53,33 +52,9 @@ func executeIt(requestBody string) string {
 	return out.String()
 }
 
-func setupRouter() *gin.Engine {
-	router := gin.Default()
-
-	// Global middleware
-	router.Use(gin.Logger())
-
-	// Routing
-	router.StaticFile("/", "./index.html")
-
-	router.POST("/api/exec", func(ctx *gin.Context) {
-		buf := make([]byte, RequestBodyBufferSize)
-		n, _ := ctx.Request.Body.Read(buf)
-		body := string(buf[0:n])
-
-		res := executeIt(body)
-
-		ctx.JSON(200, gin.H{
-			"result": res,
-		})
-	})
-
-	return router
-}
-
 func main() {
 
-	fmt.Println("Greetings Server : Version:" + Version + " Revision:" + Revision)
+	fmt.Println("command-as-a-service : Version:" + Version + " Revision:" + Revision)
 
 	endless.ListenAndServe(":8080", setupRouter())
 }
