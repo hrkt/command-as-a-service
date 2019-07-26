@@ -26,7 +26,15 @@
 
 
 [[constraint]]
-  name = "github.com/gin-gonic/gin"
+  name = "github.com/ant0ine/go-json-rest"
+  version = "3.3.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/fvbock/endless"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
   version = "1.3.0"
 
 [prune]
