@@ -1,5 +1,5 @@
 {
-    "command": "tr",
+    "port": 8080,
     "arguments": [
         "a-z",
         "A-Z"
