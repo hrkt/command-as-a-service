@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/fvbock/endless"
@@ -15,7 +16,7 @@ import (
 // AppConfig is a struct for app-config.json
 type AppConfig struct {
 	// a command to execute
-	Command string `json:"command"`
+	Port int `json:"port"`
 	// arguments for the command
 	Arguments []string `json:"arguments"`
 }
@@ -37,7 +38,7 @@ func init() {
 		panic(err)
 	}
 	json.Unmarshal(file, &appConfig)
-	fmt.Printf("Command :%s\n", appConfig.Command)
+	fmt.Printf("Port :%d\n", appConfig.Port)
 }
 
 func executeIt(path string, requestBody string) string {
@@ -75,5 +76,5 @@ func main() {
 
 	myHandler := MyServer()
 
-	endless.ListenAndServe(":8080", myHandler)
+	endless.ListenAndServe(":"+strconv.Itoa(appConfig.Port), myHandler)
 }
