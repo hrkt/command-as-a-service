@@ -36,3 +36,17 @@ func TestExecuteSortWithoutOption(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, result, w.Body.String())
 }
+
+func TestExecuteNotallowedPath(t *testing.T) {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/not/exist", strings.NewReader("a\nb"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	myServer := MyServer()
+	myServer.ServeHTTP(w, req)
+
+	result := "ERROR: command /not/exist not in the whitelist\n"
+
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, result, w.Body.String())
+}

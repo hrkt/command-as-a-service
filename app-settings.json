@@ -1,7 +1,26 @@
 {
+    "dangerousMode": false,
     "port": 8080,
-    "arguments": [
-        "a-z",
-        "A-Z"
+    "whitelist": [
+        "/bin/date",
+        "/bin/echo",
+        "/bin/hostname",
+        "/bin/sleep",
+        "/usr/bin/bc",
+        "/usr/bin/cal",
+        "/usr/bin/diff",
+        "/usr/bin/egrep",
+        "/usr/bin/grep",
+        "/usr/bin/gzcat",
+        "/usr/bin/head",
+        "/usr/bin/iconv",
+        "/usr/bin/man",
+        "/usr/bin/od",
+        "/usr/bin/sed",
+        "/usr/bin/seq",
+        "/usr/bin/sort",
+        "/usr/bin/tail",
+        "/usr/bin/tr",
+        "/usr/bin/wc"
     ]
 }
