@@ -2,7 +2,7 @@
 
 ## It does...
 
-cmd-exec-server executes the command specified by app-settings.json, with STDIN from HTTP request body, and returns STDOUT in HTTP response body.
+command-as-a-service executes the command with options specified in the url, with STDIN from HTTP request body, and returns STDOUT in HTTP response body.
 
 ## It does not...
 
@@ -11,7 +11,7 @@ cmd-exec-server executes the command specified by app-settings.json, with STDIN 
 
 ## future work
 
-see GitHub project : https://github.com/hrkt/cmd-exec-server/projects
+see GitHub project : https://github.com/hrkt/command-as-a-service/projects
 
 # How to run
 
@@ -28,9 +28,35 @@ $ make run
 2. make HTTP POST request
 
 ```
-$ curl -X POST localhost:8080/api/exec -d "some input"
-{"result":"SOME INPUT"}
+$ curl "http://localhost:8080/bin/date"
+2019年 7月27日 土曜日 15時27分43秒 JST
 ```
+
+
+Please point the command you want to execcute with url-path same as filesystem-path.
+
+i.e.
+```
+URL                                Executed
+http://localhost:8080/bin/date ==> /bin/date
+```
+
+Options for the command are given by query parameter. 
+
+i.e.
+```
+URL                                Executed
+http://localhost:8080/usr/bin/sort?-rn ==> /bin/sort -rn
+```
+
+Standard input for the command can be passed throw Request body.
+
+i.e.
+```
+URL
+$ curl "http://localhost:8080/usr/bin/sort?-r&-n" --data-binary @testdata/test.txt 
+```
+
 
 
 # prerequisites
@@ -40,14 +66,20 @@ $ curl -X POST localhost:8080/api/exec -d "some input"
 
 # app-settings.json
 
-specify "command" and "arguments"
+specify "whitelist", "port".
+enable "dangerousMode"(that does not use whitelist. In other worrds, you can execute 'rm -rf ' via http request), if it is needed.
 
 ```
 {
-    "command": "tr",
-    "arguments": [
-        "a-z",
-        "A-Z"
+    "dangerousMode": false,
+    "port": 8080,
+    "whitelist": [
+        "/bin/date",
+        "/bin/echo",
+        "/bin/hostname",
+        "/bin/sleep",
+        :
+        :
     ]
 }
 ```
@@ -102,4 +134,4 @@ MIT
 
 # CI
 
-[![CircleCI](https://circleci.com/gh/hrkt/cmd-exec-server.svg?style=svg)](https://circleci.com/gh/hrkt/cmd-exec-server)
+[![CircleCI](https://circleci.com/gh/hrkt/command-as-a-service.svg?style=svg)](https://circleci.com/gh/hrkt/command-as-a-service)
