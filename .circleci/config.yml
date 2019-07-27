@@ -17,7 +17,7 @@ jobs:
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/src/github.com/ehw2018.io/cmd-exec-server
+    working_directory: /go/src/github.com/hrkt.io/command-as-a-service
     steps:
       - checkout
 

@@ -6,19 +6,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/fvbock/endless"
-	"github.com/gin-gonic/gin"
 )
 
 // AppConfig is a struct for app-config.json
 type AppConfig struct {
+	// if true, do not use whitelist
+	DangerousMode bool `json:"dangerousMode"`
 	// a command to execute
-	Command string `json:"command"`
+	Port int `json:"port"`
 	// arguments for the command
-	Arguments []string `json:"arguments"`
+	Whitelist []string `json:"whitelist"`
 }
 
 var (
@@ -30,6 +34,8 @@ var (
 	RequestBodyBufferSize = 2048
 	// application configuration
 	appConfig AppConfig
+	// whitelistMap holds entries of whitelist as map
+	whitelistMap map[string]struct{}
 )
 
 func init() {
@@ -38,48 +44,71 @@ func init() {
 		panic(err)
 	}
 	json.Unmarshal(file, &appConfig)
-	fmt.Printf("Command :%s\n", appConfig.Command)
+	whitelistMap = make(map[string]struct{})
+	for _, v := range appConfig.Whitelist {
+		whitelistMap[v] = struct{}{}
+	}
+
+	fmt.Printf("Port :%d\n", appConfig.Port)
 }
 
-func executeIt(requestBody string) string {
-	cmd := exec.Command(appConfig.Command, appConfig.Arguments[:]...)
+func executeIt(path string, requestBody string, params []string) (int, string) {
+
+	if !appConfig.DangerousMode {
+		_, ok := whitelistMap[path]
+		if !ok {
+			return 400, string("ERROR: command " + path + " not in the whitelist")
+		}
+	}
+
+	var cmd *exec.Cmd
+	if len(params) > 0 && params[0] == "" {
+		cmd = exec.Command(path)
+	} else {
+		cmd = exec.Command(path, params[:]...)
+	}
 	cmd.Stdin = strings.NewReader(requestBody)
-	var out bytes.Buffer
-	cmd.Stdout = &out
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		return 400, string("ERROR: command execution failed. reason: " + err.Error())
 	}
-	return out.String()
+	log.Println(stdout.String())
+	return 0, string(stdout.String())
 }
 
-func setupRouter() *gin.Engine {
-	router := gin.Default()
+func MyServer() http.Handler {
+	return &myHandler{}
+}
 
-	// Global middleware
-	router.Use(gin.Logger())
+type myHandler struct {
+}
 
-	// Routing
-	router.StaticFile("/", "./index.html")
+func (f *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Println("called:" + r.URL.Path)
+	buffer, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf(err.Error())
+	}
 
-	router.POST("/api/exec", func(ctx *gin.Context) {
-		buf := make([]byte, RequestBodyBufferSize)
-		n, _ := ctx.Request.Body.Read(buf)
-		body := string(buf[0:n])
-
-		res := executeIt(body)
-
-		ctx.JSON(200, gin.H{
-			"result": res,
-		})
-	})
-
-	return router
+	unescaped, _ := url.QueryUnescape(r.URL.RawQuery)
+	params := strings.Split(unescaped, "&")
+	log.Println(params)
+	code, res := executeIt(r.URL.Path, string(buffer), params)
+	if code == 400 {
+		http.Error(w, res, http.StatusBadRequest)
+		return
+	}
+	w.Write([]byte(res))
 }
 
 func main() {
 
-	fmt.Println("Greetings Server : Version:" + Version + " Revision:" + Revision)
+	fmt.Println("command-as-a-service : Version:" + Version + " Revision:" + Revision)
 
-	endless.ListenAndServe(":8080", setupRouter())
+	myHandler := MyServer()
+
+	endless.ListenAndServe(":"+strconv.Itoa(appConfig.Port), myHandler)
 }
