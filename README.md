@@ -1,4 +1,4 @@
-# cmd-exec-server
+# command-as-a-service
 
 ## It does...
 
