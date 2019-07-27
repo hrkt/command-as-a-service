@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -41,16 +43,23 @@ func init() {
 	fmt.Printf("Port :%d\n", appConfig.Port)
 }
 
-func executeIt(path string, requestBody string) string {
-	//cmd := exec.Command(path, appConfig.Arguments[:]...)
-	cmd := exec.Command(path)
+func executeIt(path string, requestBody string, params []string) string {
+	var cmd *exec.Cmd
+	if len(params) > 0 && params[0] == "" {
+		cmd = exec.Command(path)
+	} else {
+		cmd = exec.Command(path, params[:]...)
+	}
 	cmd.Stdin = strings.NewReader(requestBody)
-	out, err := cmd.Output()
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	err := cmd.Run()
 	if err != nil {
 		log.Printf(err.Error())
 		return string(err.Error())
 	}
-	return string(out)
+	log.Println(stdout.String())
+	return string(stdout.String())
 }
 
 func MyServer() http.Handler {
@@ -66,8 +75,13 @@ func (f *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf(err.Error())
 	}
-	res := executeIt(r.URL.Path, string(buffer))
+
+	unescaped, _ := url.QueryUnescape(r.URL.RawQuery)
+	params := strings.Split(unescaped, "&")
+	log.Println(params)
+	res := executeIt(r.URL.Path, string(buffer), params)
 	w.Write([]byte(res))
+
 }
 
 func main() {

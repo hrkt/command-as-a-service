@@ -9,15 +9,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPingRoute(t *testing.T) {
-	router := setupRouter()
-
+func TestExecuteSortWithOption(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/exec", strings.NewReader("some input"))
+	req, _ := http.NewRequest("POST", "/usr/bin/sort?-rn", strings.NewReader("a\nb"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	router.ServeHTTP(w, req)
 
-	json := `{"result":"SOME INPUT"}`
+	myServer := MyServer()
+	myServer.ServeHTTP(w, req)
+
+	result := "b\na\n"
+
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, json, w.Body.String())
+	assert.Equal(t, result, w.Body.String())
+}
+
+func TestExecuteSortWithoutOption(t *testing.T) {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/usr/bin/sort", strings.NewReader("a\nb"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	myServer := MyServer()
+	myServer.ServeHTTP(w, req)
+
+	result := "a\nb\n"
+
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, result, w.Body.String())
 }
