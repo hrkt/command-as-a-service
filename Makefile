@@ -1,11 +1,11 @@
-NAME     := cmd-exec-server
-VERSION  := v0.0.1
+NAME     := command-as-a-service
+VERSION  := v0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
 SRCS    := $(shell find . -type f -name '*.go')
 LDFLAGS := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\" -extldflags \"-static\""
 
-LABEL=cmd-exec-server-test:latest
+LABEL=command-as-a-service:latest
 
 
 all: bin/$(NAME)
