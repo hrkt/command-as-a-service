@@ -73,7 +73,7 @@ func executeIt(path string, requestBody string, params []string) (int, string) {
 	err := cmd.Run()
 	if err != nil {
 		log.Printf(err.Error())
-		return 0, string(err.Error())
+		return 400, string("ERROR: command execution failed. reason: " + err.Error())
 	}
 	log.Println(stdout.String())
 	return 0, string(stdout.String())

@@ -50,3 +50,17 @@ func TestExecuteNotallowedPath(t *testing.T) {
 	assert.Equal(t, 400, w.Code)
 	assert.Equal(t, result, w.Body.String())
 }
+
+func TestExecuteFailReturnsBadRequest(t *testing.T) {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/bin/date?--not-exist-option", strings.NewReader("a\nb"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	myServer := MyServer()
+	myServer.ServeHTTP(w, req)
+
+	result := "ERROR: command execution failed. reason: exit status 1\n"
+
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, result, w.Body.String())
+}
